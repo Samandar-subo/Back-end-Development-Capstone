@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: djangoserver
+  name: djangoserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: djangoserver
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: djangoserver
+    spec:
+      containers:
+      - image: us.icr.io/<your SN_ICR_NAMESPACE>/djangoserver:1
+        imagePullPolicy: Always
+        name: djangoserver
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        env:
+        - name: SONGS_URL
+          value: "<PASTE SONGS URL FROM OPENSHIFT ROUTE>"
+        - name: PHOTO_URL
+          value: "<PASTE PICTURES URL FROM CODE ENGINE>"
+      restartPolicy: Always
